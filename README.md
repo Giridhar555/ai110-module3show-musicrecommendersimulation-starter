@@ -227,7 +227,7 @@ You can add more tests in `tests/test_recommender.py`.
 Output of `python -m src.main`, run against the three profiles defined in `src/main.py`:
 
 ```
-Loaded songs: 10
+Loaded songs: 18
 
 === Profile: High-Energy Pop ===
 Preferences: {'genre': 'pop', 'mood': 'happy', 'energy': 0.9, 'valence': 0.8, 'tempo_bpm': 130, 'danceability': 0.8}
@@ -241,11 +241,11 @@ Preferences: {'genre': 'pop', 'mood': 'happy', 'energy': 0.9, 'valence': 0.8, 't
 3. Rooftop Lights - Indigo Parade (Score: 1.93)
    Because: mood match (+1.00); energy similarity 0.86 * w0.42 = 0.36; valence similarity 0.99 * w0.26 = 0.26; tempo similarity 0.96 * w0.16 = 0.15; danceability similarity 0.98 * w0.16 = 0.15
 
-4. Storm Runner - Voltline (Score: 0.87)
-   Because: energy similarity 0.99 * w0.42 = 0.42; valence similarity 0.68 * w0.26 = 0.18; tempo similarity 0.86 * w0.16 = 0.14; danceability similarity 0.86 * w0.16 = 0.14
+4. Neon Festival - ElectroPulse (Score: 0.96)
+   Because: energy similarity 1.00 * w0.42 = 0.42; valence similarity 0.94 * w0.26 = 0.25; tempo similarity 0.99 * w0.16 = 0.16; danceability similarity 0.88 * w0.16 = 0.14
 
-5. Night Drive Loop - Neon Echo (Score: 0.82)
-   Because: energy similarity 0.85 * w0.42 = 0.36; valence similarity 0.69 * w0.26 = 0.18; tempo similarity 0.88 * w0.16 = 0.14; danceability similarity 0.93 * w0.16 = 0.15
+5. Broken Beat - Urban Flow (Score: 0.91)
+   Because: energy similarity 0.95 * w0.42 = 0.40; valence similarity 0.85 * w0.26 = 0.22; tempo similarity 0.81 * w0.16 = 0.13; danceability similarity 1.00 * w0.16 = 0.16
 
 
 === Profile: Chill Lofi ===
@@ -276,14 +276,14 @@ Preferences: {'genre': 'rock', 'mood': 'intense', 'energy': 0.92, 'valence': 0.4
 2. Gym Hero - Max Pulse (Score: 1.82)
    Because: mood match (+1.00); energy similarity 0.99 * w0.42 = 0.42; valence similarity 0.63 * w0.26 = 0.17; tempo similarity 0.89 * w0.16 = 0.14; danceability similarity 0.62 * w0.16 = 0.10
 
-3. Night Drive Loop - Neon Echo (Score: 0.83)
+3. Iron Heart - Black Anvil (Score: 0.93)
+   Because: energy similarity 0.97 * w0.42 = 0.41; valence similarity 0.90 * w0.26 = 0.24; tempo similarity 0.88 * w0.16 = 0.14; danceability similarity 0.95 * w0.16 = 0.15
+
+4. Night Drive Loop - Neon Echo (Score: 0.83)
    Because: energy similarity 0.83 * w0.42 = 0.35; valence similarity 0.91 * w0.26 = 0.24; tempo similarity 0.75 * w0.16 = 0.12; danceability similarity 0.77 * w0.16 = 0.12
 
-4. Sunrise City - Neon Echo (Score: 0.76)
-   Because: energy similarity 0.90 * w0.42 = 0.38; valence similarity 0.56 * w0.26 = 0.15; tempo similarity 0.80 * w0.16 = 0.13; danceability similarity 0.71 * w0.16 = 0.11
-
-5. Rooftop Lights - Indigo Parade (Score: 0.75)
-   Because: energy similarity 0.84 * w0.42 = 0.35; valence similarity 0.59 * w0.26 = 0.16; tempo similarity 0.84 * w0.16 = 0.13; danceability similarity 0.68 * w0.16 = 0.11
+5. Broken Beat - Urban Flow (Score: 0.81)
+   Because: energy similarity 0.93 * w0.42 = 0.39; valence similarity 0.75 * w0.26 = 0.20; tempo similarity 0.69 * w0.16 = 0.11; danceability similarity 0.70 * w0.16 = 0.11
 ```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->
