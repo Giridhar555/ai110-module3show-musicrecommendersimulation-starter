@@ -292,31 +292,68 @@ Preferences: {'genre': 'rock', 'mood': 'intense', 'energy': 0.92, 'valence': 0.4
 
 ## Experiments You Tried
 
-**Genre weight dominance:** Across all three profiles, songs with a genre bonus
-consistently start at the top. In the High-Energy Pop run, "Sunrise City"
-(score 3.94, includes both genre and mood match) beat "Gym Hero" (2.96, genre
-match only) even though Gym Hero's numeric similarities (energy 0.97, valence
-0.97) were actually slightly higher across the board. The +2.0 genre bonus and
-+1.0 mood bonus create a gap that a handful of numeric points can't close.
+**Genre weight dominance (baseline observation):** Across all three profiles, songs
+with a genre bonus consistently start at the top. In the High-Energy Pop run,
+"Sunrise City" (score 3.94, includes both genre and mood match) beat "Gym Hero"
+(2.96, genre match only) even though Gym Hero's numeric similarities (energy 0.97,
+valence 0.97) were actually slightly higher across the board. The +2.0 genre bonus
+and +1.0 mood bonus create a gap that a handful of numeric points can't close.
+
+**Executed experiment — Weight Shift:** I halved `GENRE_WEIGHT` (2.0 → 1.0) and
+doubled the `energy` numeric weight (0.4 → 0.8) directly in `recommender.py`, then
+re-ran `python -m src.main` against all three profiles.
+
+Results:
+- The **top 3** results for High-Energy Pop and Chill Lofi stayed in the *same
+  order* — genre+mood matches still won even with genre weight halved, because a
+  combined genre+mood bonus (now 1.0+1.0=2.0) still outweighs what numeric
+  closeness alone can add (max ~1.0 after weight normalization).
+- The one real change: in Deep Intense Rock, "Night Drive Loop" (previously #4)
+  dropped out of the top 5 entirely, replaced by "Neon Festival" — a song with no
+  genre or mood match at all, but very high energy similarity (0.98). This shows
+  that pushing enough weight onto a single numeric feature *can* let a
+  non-matching song sneak into the list, even if it doesn't flip the #1 spot.
+- **Conclusion:** genre+mood together form a floor that's hard for numeric
+  similarity to overcome unless you cut genre_weight much further (or drop mood
+  matching too). A single weight change wasn't enough to meaningfully reorder
+  the top of the list — it takes changing multiple weights together to shift
+  behavior. I reverted the change afterward so the shipped code uses the
+  original weights (GENRE_WEIGHT=2.0, energy weight=0.4).
+
+**Pairwise profile comparisons:**
+- *High-Energy Pop vs. Chill Lofi:* Pop favors high energy/high tempo tracks
+  ("Sunrise City," energy 0.82); Lofi favors low energy/high acousticness tracks
+  ("Library Rain," acousticness 0.94). This makes sense — the two profiles set
+  opposite `target_energy` values (0.9 vs 0.35), so the numeric similarity term
+  actively pulls in opposite directions even before genre is considered.
+- *High-Energy Pop vs. Deep Intense Rock:* Both profiles want high energy
+  (0.9 and 0.92), so "Gym Hero" (energy 0.93) appears in both top-5 lists. What
+  separates the two is valence and genre — Rock's low valence target (0.4) and
+  "intense" mood push "Storm Runner" to #1 there, while Pop's high valence (0.8)
+  and "happy" mood push "Sunrise City" to #1 for Pop. Same energy range, different
+  emotional tone, different winner.
+- *Chill Lofi vs. Deep Intense Rock:* These are near-opposites on almost every
+  axis (energy 0.35 vs 0.92, valence 0.6 vs 0.4, tempo 78 vs 150), and the
+  results reflect that — there's zero overlap in the top-5 songs between these
+  two profiles, which is the strongest sanity check that the scoring logic is
+  actually responsive to the stated preferences rather than just always
+  returning the same "generically good" songs.
 
 **Songs repeating across profiles:** "Gym Hero" and "Sunrise City" both appear
 in the top 5 for two different profiles (High-Energy Pop and Deep Intense Rock
-for Gym Hero; Pop and Rock for Sunrise City). This is a symptom of the small
-10-song catalog — there just aren't enough songs to fill five *good* matches
-per profile, so decent-but-imperfect songs get reused.
-
-**What I'd test next:** halving genre_weight (2.0 → 1.0) and doubling energy's
-share of the numeric weight to see whether numeric closeness starts to compete
-with categorical matches, or whether genre still wins outright.
+for Gym Hero; Pop and Rock for Sunrise City — see comparison above). This is
+partly expected (their energy happens to fit both profiles), but it's also a
+symptom of catalog size — even at 18 songs, there aren't always five *distinct*
+strong matches per profile, so decent-but-imperfect songs get reused.
 
 ---
 
 ## Limitations and Risks
 
-- **Tiny catalog:** With only 10 songs, the system can't offer real variety —
-  the same handful of tracks reappear across very different user profiles
-  (e.g., "Gym Hero" shows up for both "High-Energy Pop" and "Deep Intense Rock"
-  despite those being different vibes).
+- **Small catalog:** Even after expanding from 10 to 18 songs, the system still
+  can't offer huge variety — a few tracks reappear across profiles that happen
+  to share a target (e.g., "Gym Hero" shows up for both "High-Energy Pop" and
+  "Deep Intense Rock" because both target high energy).
 - **Genre/mood matching is brittle:** Matching is exact string comparison
   (`song.genre.lower() == user_prefs["genre"].lower()`). A song tagged "hip hop"
   won't match a user who typed "hip-hop" or "rap" — there's no fuzzy matching or

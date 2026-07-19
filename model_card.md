@@ -16,9 +16,9 @@ This is an educational simulator, not a production service.
 
 ## 3. Data Used
 
-- Catalog size: starter dataset has 10 songs. The README suggests 8 more example rows that can be added to expand to 18.
+- Catalog size: 18 songs (the original 10-song starter set plus 8 additional songs I generated to add genres and moods not already present — classical, hip hop, metal, reggae, country, blues, electronic, and world).
 - Features per song: id, title, artist, genre, mood, energy (0–1), tempo_bpm, valence (0–1), danceability (0–1), acousticness (0–1).
-- Notes: The dataset is small and unevenly distributed across genres and moods. It does not include popularity, lyrics, or listening history.
+- Notes: The dataset is still small and unevenly distributed across genres and moods (some genres, like pop and lofi, have 2-3 songs; others, like classical, have exactly 1). It does not include popularity, lyrics, or listening history.
 
 ---
 
@@ -49,12 +49,25 @@ How the system was tested:
   2. Chill Lofi (lofi, chill, energy ~0.35, tempo ~78, high acousticness)
   3. Deep Intense Rock (rock, intense, energy ~0.92, tempo ~150)
 - For each profile the system scores every song, sorts by score, and returns the top-5.
-- Planned experiments:
-  - Weight Shift: increase energy weight and reduce genre weight to test sensitivity.
-  - Feature Removal: disable mood bonus to see how important mood is.
-- Observations to check for when running locally:
-  - Whether songs match both categorical and numeric prefs.
-  - Whether a single song repeatedly tops all lists (indicates weight imbalance or dataset skew).
+- Executed experiment — Weight Shift: halved GENRE_WEIGHT (2.0 → 1.0) and doubled
+  the energy numeric weight (0.4 → 0.8), then re-ran all three profiles. Result:
+  the top-3 ranking barely changed for Pop and Lofi (genre+mood combined still
+  outweighs numeric closeness), but in Deep Intense Rock, "Night Drive Loop"
+  dropped out of the top 5 and was replaced by "Neon Festival" — a song with no
+  genre or mood match but very high energy similarity. Conclusion: a single
+  weight change wasn't enough to reorder the top of most lists; genre+mood
+  together form a floor that's hard for numeric similarity alone to overcome.
+  See the "Experiments You Tried" section of README.md for the full before/after
+  output.
+- Pairwise findings: Pop vs. Lofi have zero song overlap in their top-5s (opposite
+  energy/tempo targets). Pop and Rock share "Gym Hero" (both want high energy)
+  but differ in the #1 song because Rock's low valence target favors "Storm
+  Runner" while Pop's high valence target favors "Sunrise City." Lofi and Rock
+  are near-opposite on every numeric axis and also share zero overlap.
+- Observations checked for: whether songs match both categorical and numeric
+  prefs (they generally do for the top 1-2 results); whether a single song
+  repeatedly tops all lists (it doesn't — each profile's #1 differs, which
+  confirms the scoring logic responds to the stated preferences).
 
 ---
 
