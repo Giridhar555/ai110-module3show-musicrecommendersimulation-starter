@@ -9,7 +9,17 @@ You will implement the functions in recommender.py:
 - recommend_songs
 """
 
-from recommender import load_songs, recommend_songs
+from src.recommender import load_songs, recommend_songs
+
+
+def print_recs_for_profile(name: str, user_prefs: dict, songs: list, k: int = 5) -> None:
+    """Helper to print top-k recommendations for a named profile."""
+    print(f"\n=== Profile: {name} ===")
+    print(f"Preferences: {user_prefs}\n")
+    recs = recommend_songs(user_prefs, songs, k=k)
+    for idx, (song, score, explanation) in enumerate(recs, start=1):
+        print(f"{idx}. {song['title']} - {song['artist']} (Score: {score:.2f})")
+        print(f"   Because: {explanation}\n")
 
 
 def print_recs_for_profile(name: str, user_prefs: dict, songs: list, k: int = 5) -> None:
