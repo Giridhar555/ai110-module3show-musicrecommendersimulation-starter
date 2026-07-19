@@ -11,7 +11,13 @@ Your goal is to:
 - Evaluate what your system gets right and wrong
 - Reflect on how this mirrors real world AI recommenders
 
-Replace this paragraph with your own summary of what your version does.
+VibeFinder is a small content-based song recommender. Given a user's stated taste
+(preferred genre, mood, and target values for energy, valence, tempo, danceability,
+and acousticness), it scores every song in the catalog, explains each score with a
+list of reasons (e.g., "genre match (+2.00)"), and returns the top-K ranked matches.
+Genre and mood are exact-match categorical bonuses; the remaining numeric features
+use a linear closeness score so songs land higher the nearer they are to the user's
+target, not just for having "more" or "less" of a given feature.
 
 ---
 
@@ -218,15 +224,66 @@ You can add more tests in `tests/test_recommender.py`.
 
 ## Sample Recommendation Output
 
-Paste a sample of your recommender's output here as a text block so a reader can see what it produces:
+Output of `python -m src.main`, run against the three profiles defined in `src/main.py`:
 
 ```
-# e.g.:
-# User profile: genre=indie, mood=chill, energy=low
-# Recommendations:
-#   1. ...
-#   2. ...
-#   3. ...
+Loaded songs: 10
+
+=== Profile: High-Energy Pop ===
+Preferences: {'genre': 'pop', 'mood': 'happy', 'energy': 0.9, 'valence': 0.8, 'tempo_bpm': 130, 'danceability': 0.8}
+
+1. Sunrise City - Neon Echo (Score: 3.94)
+   Because: genre match (+2.00); mood match (+1.00); energy similarity 0.92 * w0.42 = 0.39; valence similarity 0.96 * w0.26 = 0.25; tempo similarity 0.93 * w0.16 = 0.15; danceability similarity 0.99 * w0.16 = 0.16
+
+2. Gym Hero - Max Pulse (Score: 2.96)
+   Because: genre match (+2.00); energy similarity 0.97 * w0.42 = 0.41; valence similarity 0.97 * w0.26 = 0.26; tempo similarity 0.99 * w0.16 = 0.16; danceability similarity 0.92 * w0.16 = 0.15
+
+3. Rooftop Lights - Indigo Parade (Score: 1.93)
+   Because: mood match (+1.00); energy similarity 0.86 * w0.42 = 0.36; valence similarity 0.99 * w0.26 = 0.26; tempo similarity 0.96 * w0.16 = 0.15; danceability similarity 0.98 * w0.16 = 0.15
+
+4. Storm Runner - Voltline (Score: 0.87)
+   Because: energy similarity 0.99 * w0.42 = 0.42; valence similarity 0.68 * w0.26 = 0.18; tempo similarity 0.86 * w0.16 = 0.14; danceability similarity 0.86 * w0.16 = 0.14
+
+5. Night Drive Loop - Neon Echo (Score: 0.82)
+   Because: energy similarity 0.85 * w0.42 = 0.36; valence similarity 0.69 * w0.26 = 0.18; tempo similarity 0.88 * w0.16 = 0.14; danceability similarity 0.93 * w0.16 = 0.15
+
+
+=== Profile: Chill Lofi ===
+Preferences: {'genre': 'lofi', 'mood': 'chill', 'energy': 0.35, 'valence': 0.6, 'tempo_bpm': 78, 'danceability': 0.5, 'acousticness': 0.8}
+
+1. Library Rain - Paper Lanterns (Score: 3.98)
+   Because: genre match (+2.00); mood match (+1.00); energy similarity 1.00 * w0.40 = 0.40; valence similarity 1.00 * w0.25 = 0.25; tempo similarity 0.96 * w0.15 = 0.14; danceability similarity 0.92 * w0.15 = 0.14; acousticness similarity 0.94 * w0.05 = 0.05
+
+2. Midnight Coding - LoRoom (Score: 3.94)
+   Because: genre match (+2.00); mood match (+1.00); energy similarity 0.93 * w0.40 = 0.37; valence similarity 0.96 * w0.25 = 0.24; tempo similarity 1.00 * w0.15 = 0.15; danceability similarity 0.88 * w0.15 = 0.13; acousticness similarity 0.91 * w0.05 = 0.05
+
+3. Focus Flow - LoRoom (Score: 2.96)
+   Because: genre match (+2.00); energy similarity 0.95 * w0.40 = 0.38; valence similarity 0.99 * w0.25 = 0.25; tempo similarity 0.99 * w0.15 = 0.15; danceability similarity 0.90 * w0.15 = 0.14; acousticness similarity 0.98 * w0.05 = 0.05
+
+4. Spacewalk Thoughts - Orbit Bloom (Score: 1.92)
+   Because: mood match (+1.00); energy similarity 0.93 * w0.40 = 0.37; valence similarity 0.95 * w0.25 = 0.24; tempo similarity 0.89 * w0.15 = 0.13; danceability similarity 0.91 * w0.15 = 0.14; acousticness similarity 0.88 * w0.05 = 0.04
+
+5. Coffee Shop Stories - Slow Stereo (Score: 0.94)
+   Because: energy similarity 0.98 * w0.40 = 0.39; valence similarity 0.89 * w0.25 = 0.22; tempo similarity 0.93 * w0.15 = 0.14; danceability similarity 0.96 * w0.15 = 0.14; acousticness similarity 0.91 * w0.05 = 0.05
+
+
+=== Profile: Deep Intense Rock ===
+Preferences: {'genre': 'rock', 'mood': 'intense', 'energy': 0.92, 'valence': 0.4, 'tempo_bpm': 150, 'danceability': 0.5}
+
+1. Storm Runner - Voltline (Score: 3.95)
+   Because: genre match (+2.00); mood match (+1.00); energy similarity 0.99 * w0.42 = 0.42; valence similarity 0.92 * w0.26 = 0.24; tempo similarity 0.99 * w0.16 = 0.16; danceability similarity 0.84 * w0.16 = 0.13
+
+2. Gym Hero - Max Pulse (Score: 1.82)
+   Because: mood match (+1.00); energy similarity 0.99 * w0.42 = 0.42; valence similarity 0.63 * w0.26 = 0.17; tempo similarity 0.89 * w0.16 = 0.14; danceability similarity 0.62 * w0.16 = 0.10
+
+3. Night Drive Loop - Neon Echo (Score: 0.83)
+   Because: energy similarity 0.83 * w0.42 = 0.35; valence similarity 0.91 * w0.26 = 0.24; tempo similarity 0.75 * w0.16 = 0.12; danceability similarity 0.77 * w0.16 = 0.12
+
+4. Sunrise City - Neon Echo (Score: 0.76)
+   Because: energy similarity 0.90 * w0.42 = 0.38; valence similarity 0.56 * w0.26 = 0.15; tempo similarity 0.80 * w0.16 = 0.13; danceability similarity 0.71 * w0.16 = 0.11
+
+5. Rooftop Lights - Indigo Parade (Score: 0.75)
+   Because: energy similarity 0.84 * w0.42 = 0.35; valence similarity 0.59 * w0.26 = 0.16; tempo similarity 0.84 * w0.16 = 0.13; danceability similarity 0.68 * w0.16 = 0.11
 ```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->
