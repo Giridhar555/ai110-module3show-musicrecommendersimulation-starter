@@ -95,30 +95,3 @@ I was surprised that simple linear similarity and a clear weight scheme produce 
 2. (Optional) Create and activate a venv.
 3. Run: python -m src.main
 4. Inspect the printed top-5 recommendations for the three sample profiles.
-
-
-
----
-
-## 8. Future Work  
-
-Ideas for how you would improve the model next.  
-
-Prompts:  
-
-- Additional features or preferences  
-- Better ways to explain recommendations  
-- Improving diversity among the top results  
-- Handling more complex user tastes  
-
----
-
-## 9. Personal Reflection  
-
-A few sentences about your experience.  
-
-Prompts:  
-
-- What you learned about recommender systems  
-- Something unexpected or interesting you discovered  
-- How this changed the way you think about music recommendation apps  
