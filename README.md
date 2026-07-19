@@ -235,23 +235,41 @@ Paste a sample of your recommender's output here as a text block so a reader can
 
 ## Experiments You Tried
 
-Use this section to document the experiments you ran. For example:
+**Genre weight dominance:** Across all three profiles, songs with a genre bonus
+consistently start at the top. In the High-Energy Pop run, "Sunrise City"
+(score 3.94, includes both genre and mood match) beat "Gym Hero" (2.96, genre
+match only) even though Gym Hero's numeric similarities (energy 0.97, valence
+0.97) were actually slightly higher across the board. The +2.0 genre bonus and
++1.0 mood bonus create a gap that a handful of numeric points can't close.
 
-- What happened when you changed the weight on genre from 2.0 to 0.5
-- What happened when you added tempo or valence to the score
-- How did your system behave for different types of users
+**Songs repeating across profiles:** "Gym Hero" and "Sunrise City" both appear
+in the top 5 for two different profiles (High-Energy Pop and Deep Intense Rock
+for Gym Hero; Pop and Rock for Sunrise City). This is a symptom of the small
+10-song catalog — there just aren't enough songs to fill five *good* matches
+per profile, so decent-but-imperfect songs get reused.
+
+**What I'd test next:** halving genre_weight (2.0 → 1.0) and doubling energy's
+share of the numeric weight to see whether numeric closeness starts to compete
+with categorical matches, or whether genre still wins outright.
 
 ---
 
 ## Limitations and Risks
 
-Summarize some limitations of your recommender.
-
-Examples:
-
-- It only works on a tiny catalog
-- It does not understand lyrics or language
-- It might over favor one genre or mood
+- **Tiny catalog:** With only 10 songs, the system can't offer real variety —
+  the same handful of tracks reappear across very different user profiles
+  (e.g., "Gym Hero" shows up for both "High-Energy Pop" and "Deep Intense Rock"
+  despite those being different vibes).
+- **Genre/mood matching is brittle:** Matching is exact string comparison
+  (`song.genre.lower() == user_prefs["genre"].lower()`). A song tagged "hip hop"
+  won't match a user who typed "hip-hop" or "rap" — there's no fuzzy matching or
+  synonym handling.
+- **No understanding of content:** The system never looks at lyrics, instrumentation,
+  or actual audio — it only compares numbers a human assigned to each song.
+- **Genre bonus can overpower better numeric fits:** Because genre_weight (2.0)
+  is larger than the entire numeric similarity contribution typically adds up
+  to, a genre match will usually outrank a song that's numerically closer to the
+  user's taste but in a different genre.
 
 You will go deeper on this in your model card.
 
@@ -263,10 +281,18 @@ Read and complete `model_card.md`:
 
 [**Model Card**](model_card.md)
 
-Write 1 to 2 paragraphs here about what you learned:
+Building this recommender showed me how much a single hardcoded weight can
+shape a system's behavior. I expected the numeric similarity scores (energy,
+valence, tempo) to matter more, but the genre_weight of 2.0 turned out to be
+strong enough that a genre match almost always wins, even against a song that's
+numerically closer to what the user asked for. That's a small, concrete example
+of how a real recommender's "personality" is really just a set of weight choices
+someone made — and how those choices quietly decide what gets seen and what
+doesn't.
 
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
-
-
-
+Where bias or unfairness could show up: in this simulator, songs from genres or
+moods missing from the catalog can never surface, no matter how well their
+numeric features would otherwise match. A real streaming platform has the same
+risk at scale — genres, artists, or regions underrepresented in the training
+data or catalog get systematically under-recommended, even if listeners would
+actually enjoy them.
